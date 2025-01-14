@@ -1,94 +1,128 @@
-class RDSDatabaseConnector:
-    def load_credentials(file_path='credentials.yaml'):
-    # Load the credentials from a YAML file and return them as a dictionary.
-        try:
-            with open(file_path, 'r') as file:
-                credentials = yaml.safe_load(file)
-                return credentials
-        except Exception as e:
-            print(f"Error loading credentials: {e}")
-            raise
+import yaml
+from sqlalchemy import create_engine
+import pandas as pd
 
-    def __init__(self, credentials):
+
+class RDSDatabaseConnector:
+    """
+    A class to manage connections and data extraction from an RDS database.
+    """
+
+    def __init__(self, credentials: dict):
         """
-        Initialize the RDSDatabaseConnector instance with connection parameters from the credentials dictionary.
+        Initializes the RDSDatabaseConnector with database credentials.
         
-        :param credentials: A dictionary containing the database connection details.
+        Args:
+            credentials (dict): A dictionary containing the database credentials.
         """
-        print("Jesse")
-        self.host = credentials['RDS_HOST']
-        self.port = credentials['RDS_PORT']
-        self.database = credentials['RDS_DATABASE']
-        self.user = credentials['RDS_USER']
-        self.password = credentials['RDS_PASSWORD']
+        self.credentials = credentials
         self.engine = None
 
-    def initialize_engine(self):
+    def init_db_engine(self) -> None:
         """
-        Initialize the SQLAlchemy engine to connect to the RDS database using the credentials.
+        Initializes the SQLAlchemy engine using provided credentials.
         """
         try:
-            # Create the connection string for SQLAlchemy
-            connection_string = f'postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}'
-            
-            # Initialize the SQLAlchemy engine
-            self.engine = create_engine(connection_string)
-            print("SQLAlchemy engine initialized successfully.")
+            self.engine = create_engine(
+                f"postgresql://{self.credentials['RDS_USER']}:"
+                f"{self.credentials['RDS_PASSWORD']}@"
+                f"{self.credentials['RDS_HOST']}:{self.credentials['RDS_PORT']}/"
+                f"{self.credentials['RDS_DATABASE']}"
+            )
+            print("Database engine successfully initialized.")
         except Exception as e:
-            print(f"Error initializing SQLAlchemy engine: {e}")
-            raise
-    
-    def extract_data(self):
+            print(f"Error initializing database engine: {e}")
+
+    def extract_table_to_dataframe(self, table_name: str) -> pd.DataFrame:
         """
-        Extract data from the 'customer_activity' table and return it as a Pandas DataFrame.
-        
-        :return: A Pandas DataFrame containing the extracted data.
+        Extracts data from a specified table into a Pandas DataFrame.
+
+        Args:
+            table_name (str): Name of the table to extract data from.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the table data.
         """
+        if not self.engine:
+            raise ValueError("Database engine is not initialized. Call init_db_engine first.")
+
         try:
-            # Use the Pandas read_sql function to extract data from the 'customer_activity' table
-            query = "SELECT * FROM customer_activity"
+            query = f"SELECT * FROM {table_name};"
             df = pd.read_sql(query, self.engine)
-            print("Data extracted successfully from 'customer_activity'.")
+            print(f"Data successfully extracted from table: {table_name}")
             return df
         except Exception as e:
-            print(f"Error extracting data from 'customer_activity': {e}")
-            raise
+            print(f"Error extracting data from table {table_name}: {e}")
+            return pd.DataFrame()
 
-    def save_to_csv(self, dataframe, filename='customer_activity_data.csv'):
+    def save_dataframe_to_csv(self, df: pd.DataFrame, file_path: str) -> None:
         """
-        Save the Pandas DataFrame to a CSV file on the local machine.
-        
-        :param dataframe: The Pandas DataFrame to save.
-        :param filename: The name of the file to save the data to (default is 'customer_activity_data.csv').
+        Saves a DataFrame to a CSV file.
+
+        Args:
+            df (pd.DataFrame): The DataFrame to save.
+            file_path (str): Path to save the CSV file.
         """
         try:
-            # Save the DataFrame to a CSV file in the current working directory
-            dataframe.to_csv(filename, index=False)
-            print(f"Data successfully saved to {filename}.")
-        
+            df.to_csv(file_path, index=False)
+            print(f"Data successfully saved to {file_path}")
         except Exception as e:
-            print(f"Error saving data to CSV: {e}")
-            raise
+            print(f"Error saving DataFrame to CSV: {e}")
 
-    def load_local_data(filename='customer_activity_data.csv'):
+    @staticmethod
+    def load_csv_to_dataframe(file_path: str) -> pd.DataFrame:
         """
-        Load data from a locally stored CSV file into a Pandas DataFrame.
-        
-        :param filename: The name of the CSV file to load (default is 'customer_activity_data.csv').
-        :return: A Pandas DataFrame containing the loaded data.
+        Loads data from a CSV file into a Pandas DataFrame.
+
+        Args:
+            file_path (str): Path of the CSV file to load.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the loaded data.
         """
         try:
-            # Load the CSV file into a Pandas DataFrame
-            dataframe = pd.read_csv(filename)
-            
-            # Print the shape of the data
-            print(f"Data shape: {dataframe.shape}")
-            
-            # Print a preview of the data
-            print("Data sample:")
-            print(dataframe.head())
-            
-            return dataframe
+            df = pd.read_csv(file_path)
+            print(f"Data successfully loaded from {file_path}")
+            print(f"Data Shape: {df.shape}")
+            print(f"Data Sample:\n{df.head()}")
+            return df
         except Exception as e:
-            print(f"Error loading data from {filename}: {e}")
-            raise
+            print(f"Error loading CSV from {file_path}: {e}")
+            return pd.DataFrame()
+
+
+def load_db_credentials(file_path: str) -> dict:
+    """
+    Loads database credentials from a YAML file.
+
+    Args:
+        file_path (str): Path to the YAML file containing credentials.
+
+    Returns:
+        dict: Dictionary containing database credentials.
+    """
+    try:
+        with open(file_path, 'r') as file:
+            credentials = yaml.safe_load(file)
+        print(f"Credentials successfully loaded from {file_path}")
+        return credentials
+    except Exception as e:
+        print(f"Error loading credentials from {file_path}: {e}")
+        return {}
+
+
+if __name__ == "__main__":
+    # Example Usage (not required in the actual code base)
+    credentials_path = "credentials.yaml"
+    credentials = load_db_credentials(credentials_path)
+
+    connector = RDSDatabaseConnector(credentials)
+    connector.init_db_engine()
+
+    table_name = "customer_activity"
+    df = connector.extract_table_to_dataframe(table_name)
+
+    csv_file_path = "customer_activity_data.csv"
+    connector.save_dataframe_to_csv(df, csv_file_path)
+
+    loaded_df = RDSDatabaseConnector.load_csv_to_dataframe(csv_file_path)
