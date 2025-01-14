@@ -24,5 +24,4 @@ This project demonstrates how to connect to an AWS RDS database, extract data us
 ## Installation
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/your-repository.git
-   cd your-repository
+   git clone https://github.com/MaryAbioye/exploratory-data-analysis---online-shopping-in-retail92.git
