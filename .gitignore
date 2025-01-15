@@ -1,1 +1,12 @@
+# Ignore YAML credentials file
 credentials.yaml
+
+# Ignore any data files
+data/*.csv
+
+# Python bytecode files
+__pycache__/
+*.pyc
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
