@@ -1,3 +1,4 @@
+#milestone 3 task 3, STEP 1A
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns

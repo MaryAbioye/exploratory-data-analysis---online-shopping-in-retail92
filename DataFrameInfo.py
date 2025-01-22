@@ -67,10 +67,11 @@ if __name__ == "__main__":
         "text_column": ["$100", "$200", "$300"],
         "category_column": ["A", "B", "A"],
     }
-    df = pd.DataFrame(data)
+customer_activity_df = pd.read_csv('customer_activity_data.csv')
+df = pd.DataFrame(customer_activity_df)
 
-    print("Initial DataFrame:")
-    print(df)
+print("Initial DataFrame:")
+print(df)
 
     # Data Transformation
     transformer = DataTransform(df)
@@ -91,4 +92,3 @@ if __name__ == "__main__":
     info.count_distinct()
     info.count_nulls()
     info.display_shape()
-df.info()

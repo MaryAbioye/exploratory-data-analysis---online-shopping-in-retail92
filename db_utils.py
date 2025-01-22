@@ -111,7 +111,6 @@ def load_db_credentials(file_path: str) -> dict:
         return {}
     
 if __name__ == "__main__":
-    # Example Usage (not required in the actual code base)
     credentials_path = "credentials.yaml"
     credentials = load_db_credentials(credentials_path)
 

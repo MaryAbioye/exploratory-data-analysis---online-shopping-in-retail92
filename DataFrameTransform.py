@@ -96,19 +96,3 @@ class DataTransformation:
         print(self.df.info())
         print("\nMissing Values:")
         print(self.df.isnull().sum())
-
-
-if __name__ == "__main__":
-    
-    customer_activity_df = pd.read_csv('customer_activity_data.csv')
-    df = pd.DataFrame(customer_activity_df)
-
-    transformer = DataTransformation(df)
-
-    transformer.convert_to_datetime("date_column")
-    transformer.convert_to_numeric("numeric_column")
-    transformer.strip_symbols("text_column", symbols=["$"])
-    transformer.convert_to_categorical("category_column")
-
-    transformer.summary()
-    df.info()
