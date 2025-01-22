@@ -1,82 +1,94 @@
+# #milestone 3 task 2
 import pandas as pd
+from DataTransform import DataTransform
+
+
+
 
 class DataFrameInfo:
+    """
+    A class to extract and summarize information about a Pandas DataFrame.
+    """
+    def __init__(self, df: pd.DataFrame):
+        """
+        Initializes the DataFrameInfo class with a DataFrame.
 
-    def __init__(self, df):
+        Args:
+            df (pd.DataFrame): The DataFrame to analyze.
+        """
         self.df = df
 
     def describe_columns(self):
         """
-        Describes all columns in the DataFrame, including data types.
+        Describes the columns in the DataFrame, including their data types and non-null counts.
         """
-        print("Column Descriptions:")
-        print(self.df.dtypes)
+        print("Column Description:")
+        print(self.df.info())
 
-    def get_statistical_values(self, column=None):
+    def get_statistics(self):
         """
-        Extracts statistical values (median, standard deviation, mean) for 
-        a specified column or the entire DataFrame.
+        Extracts mean, median, and standard deviation for numerical columns.
+        """
+        stats = self.df.describe().T
+        stats['median'] = self.df.median(numeric_only=True)
+        print("Statistical Summary:")
+        print(stats)
 
-        Args:
-            column (str, optional): Name of the column to extract statistics for. 
-                                   If None, extracts for all numerical columns.
+    def count_distinct(self):
         """
-        if column:
-            if self.df[column].dtype in ['int64', 'float64']:
-                print(f"Statistics for column '{column}':")
-                print(f"Median: {self.df[column].median()}")
-                print(f"Standard Deviation: {self.df[column].std()}")
-                print(f"Mean: {self.df[column].mean()}")
-            else:
-                print(f"Column '{column}' is not numeric.")
-        else:
-            print("Statistics for all numeric columns:")
-            for col in self.df.select_dtypes(include=['int64', 'float64']):
-                print(f"Column '{col}':")
-                print(f"Median: {self.df[col].median()}")
-                print(f"Standard Deviation: {self.df[col].std()}")
-                print(f"Mean: {self.df[col].mean()}")
-                print("-" * 20)
-
-    def count_distinct_values(self):
-        """
-        Counts distinct values in categorical columns.
+        Counts the distinct values in categorical columns.
         """
         print("Distinct Value Counts for Categorical Columns:")
-        for col in self.df.select_dtypes(include=['object', 'category']):
-            print(f"Column '{col}': {len(self.df[col].unique())} distinct values")
+        for column in self.df.select_dtypes(include=['category']).columns:
+            print(f"{column}: {self.df[column].nunique()} unique values")
 
-    def get_shape(self):
+    def count_nulls(self):
         """
-        Prints the shape of the DataFrame (rows, columns).
+        Counts and calculates the percentage of NULL values in each column.
+        """
+        null_counts = self.df.isnull().sum()
+        null_percentages = (self.df.isnull().mean()) * 100
+        print("Null Value Counts and Percentages:")
+        print(pd.DataFrame({"Count": null_counts, "Percentage": null_percentages}))
+
+    def display_shape(self):
+        """
+        Prints the shape of the DataFrame.
         """
         print(f"DataFrame Shape: {self.df.shape}")
 
-    def get_null_value_counts(self):
-        """
-        Generates count/percentage of NULL values in each column.
-        """
-        print("NULL Value Counts:")
-        for col in self.df.columns:
-            null_count = self.df[col].isnull().sum()
-            null_percentage = (null_count / len(self.df)) * 100
-            print(f"Column '{col}': {null_count} ({null_percentage:.2f}%) NULL values")
 
-    def get_column_value_counts(self, column):
-        """
-        Prints the value counts for a given column.
-        """
-        print(f"Value Counts for Column '{column}':")
-        print(self.df[column].value_counts())
+# Example Usage
+if __name__ == "__main__":
+    # Sample DataFrame
+    data = {
+        "date_column": ["2023-01-01", "2023-02-01", "not_a_date"],
+        "numeric_column": ["100", "200.5", "invalid"],
+        "text_column": ["$100", "$200", "$300"],
+        "category_column": ["A", "B", "A"],
+    }
+    df = pd.DataFrame(data)
 
-# Example usage
-# Assuming you have a DataFrame 'df'
-df = pd.read_csv('customer_activity_data.csv') 
+    print("Initial DataFrame:")
+    print(df)
 
-df_info = DataFrameInfo(df)
-df_info.describe_columns()
-df_info.get_statistical_values()
-df_info.count_distinct_values()
-df_info.get_shape()
-df_info.get_null_value_counts()
-df_info.get_column_value_counts('month')
+    # Data Transformation
+    transformer = DataTransform(df)
+    transformer.convert_to_datetime("date_column")
+    transformer.convert_to_numeric("numeric_column")
+    transformer.strip_symbols("text_column", symbols=["$"])
+    transformer.to_category('traffic_type', 'operating_systems', 'browser', 'region', 'visitor_type')
+    transformer.to_Int('administrative','product_related')
+    
+
+    print("\nTransformed DataFrame:")
+    print(df)
+
+    # Data Analysis
+    info = DataFrameInfo(df)
+    info.describe_columns()
+    info.get_statistics()
+    info.count_distinct()
+    info.count_nulls()
+    info.display_shape()
+df.info()

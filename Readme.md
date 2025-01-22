@@ -20,6 +20,7 @@ This project demonstrates how to connect to an AWS RDS database, extract data us
 - Handling database credentials securely with YAML files.
 - Using SQLAlchemy to manage database connections.
 - Saving and loading data efficiently with Pandas.
+- Analysing and transforming data
 
 ## Installation
 1. Clone this repository:

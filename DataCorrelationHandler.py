@@ -73,35 +73,3 @@ class DataCorrelationHandler:
 
         print(f"Removed {len(columns_to_drop)} highly correlated columns.")
         print(f"DataFrame shape before: {initial_shape}, after: {final_shape}.")
-
-
-# Example Usage
-if __name__ == "__main__":
-    # Sample DataFrame
-    data = {
-        "A": [1, 2, 3, 4, 5],
-        "B": [2, 4, 6, 8, 10],
-        "C": [5, 3, 2, 4, 1],
-        "D": [10, 20, 30, 40, 50],
-    }
-    df = pd.DataFrame(data)
-
-    print("Initial DataFrame:")
-    print(df)
-    print()
-
-    # Initialize the correlation handler
-    corr_handler = DataCorrelationHandler(df)
-
-    # Step 1: Compute and visualize correlation matrix
-    corr_handler.compute_correlation_matrix()
-    corr_handler.plot_correlation_matrix()
-
-    # Step 2: Identify highly correlated columns
-    columns_to_drop = corr_handler.identify_highly_correlated_columns(threshold=0.8)
-
-    # Step 3 & 4: Remove highly correlated columns
-    corr_handler.remove_highly_correlated_columns(columns_to_drop)
-
-    print("DataFrame after removing highly correlated columns:")
-    print(corr_handler.df)

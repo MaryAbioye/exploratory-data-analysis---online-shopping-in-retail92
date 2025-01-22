@@ -98,21 +98,17 @@ class DataTransformation:
         print(self.df.isnull().sum())
 
 
-# Example usage:
 if __name__ == "__main__":
-    # Load dataset (replace 'data.csv' with actual dataset file)
-    df = pd.read_csv("data.csv")
+    
+    customer_activity_df = pd.read_csv('customer_activity_data.csv')
+    df = pd.DataFrame(customer_activity_df)
 
-    # Initialize transformer
-    transformer = DataTransform(df)
+    transformer = DataTransformation(df)
 
-    # Example transformations
-    transformer.convert_to_numeric("administrative_duration")
-    transformer.convert_to_numeric("informational_duration")
-    transformer.convert_to_numeric("page_values")
-    transformer.convert_month_to_numeric("month")
-    transformer.convert_to_categorical("visitor_type")
-    transformer.convert_to_categorical("browser")
+    transformer.convert_to_datetime("date_column")
+    transformer.convert_to_numeric("numeric_column")
+    transformer.strip_symbols("text_column", symbols=["$"])
+    transformer.convert_to_categorical("category_column")
 
-    # Print summary
     transformer.summary()
+    df.info()

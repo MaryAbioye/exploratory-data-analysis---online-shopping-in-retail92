@@ -109,8 +109,7 @@ def load_db_credentials(file_path: str) -> dict:
     except Exception as e:
         print(f"Error loading credentials from {file_path}: {e}")
         return {}
-
-
+    
 if __name__ == "__main__":
     # Example Usage (not required in the actual code base)
     credentials_path = "credentials.yaml"

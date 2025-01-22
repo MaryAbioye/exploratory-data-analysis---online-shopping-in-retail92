@@ -1,3 +1,4 @@
+# Milestone 3 Task 1
 import pandas as pd
 
 class DataTransform:
@@ -56,18 +57,47 @@ class DataTransform:
         except Exception as e:
             print(f"Error removing symbols from column '{column}': {e}")
 
-    def convert_to_categorical(self, column: str) -> None:
+
+    def to_category(self, *columns):
         """
-        Converts a column to a categorical data type.
+        Converts specified columns to categorical data type.
 
         Args:
-            column (str): The name of the column to convert.
+            *columns: Column names to be converted to categorical.
         """
-        try:
-            self.df[column] = self.df[column].astype("category")
-            print(f"Column '{column}' successfully converted to categorical.")
-        except Exception as e:
-            print(f"Error converting column '{column}' to categorical: {e}")
+        for column in columns:
+            try:
+                self.df[column] = self.df[column].astype("category")
+                print(f"Column '{column}' successfully converted to categorical.")
+            except Exception as e:
+                print(f"Error converting column '{column}' to categorical: {e}")
+
+    def to_Int(self, *columns):
+        """
+        Converts specified columns to integer format, coercing errors to NaN.
+
+        Args:
+            *columns: Column names to be converted to integer.
+        """
+        for column in columns:
+            try:
+                self.df[column] = pd.to_numeric(self.df[column], errors="coerce").astype("Int64")
+                print(f"Column '{column}' successfully converted to integer.")
+            except Exception as e:
+                print(f"Error converting column '{column}' to integer: {e}")
+
+    # def convert_to_categorical(self, column: str) -> None:
+    #     """
+    #     Converts a column to a categorical data type.
+
+    #     Args:
+    #         column (str): The name of the column to convert.
+    #     """
+    #     try:
+    #         self.df[column] = self.df[column].astype("category")
+    #         print(f"Column '{column}' successfully converted to categorical.")
+    #     except Exception as e:
+    #         print(f"Error converting column '{column}' to categorical: {e}")
 
     def summary(self) -> None:
         """
@@ -78,23 +108,18 @@ class DataTransform:
         print("\nMissing Values:")
         print(self.df.isnull().sum())
 
-
-# Example usage (for understanding only):
 if __name__ == "__main__":
-    # Sample DataFrame
-    data = {
-        "date_column": ["2023-01-01", "2023-02-01", "not_a_date"],
-        "numeric_column": ["100", "200.5", "invalid"],
-        "text_column": ["$100", "$200", "$300"],
-        "category_column": ["A", "B", "A"],
-    }
-    df = pd.DataFrame(data)
+    
+    customer_activity_df = pd.read_csv('customer_activity_data.csv')
+    df = pd.DataFrame(customer_activity_df)
 
     transformer = DataTransform(df)
 
     transformer.convert_to_datetime("date_column")
     transformer.convert_to_numeric("numeric_column")
     transformer.strip_symbols("text_column", symbols=["$"])
-    transformer.convert_to_categorical("category_column")
+    transformer.to_category('traffic_type', 'operating_systems', 'browser', 'region', 'visitor_type')
+    transformer.to_Int('administrative','product_related')
 
     transformer.summary()
+    df.info()
