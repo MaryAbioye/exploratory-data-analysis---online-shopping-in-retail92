@@ -86,19 +86,6 @@ class DataTransform:
             except Exception as e:
                 print(f"Error converting column '{column}' to integer: {e}")
 
-    # def convert_to_categorical(self, column: str) -> None:
-    #     """
-    #     Converts a column to a categorical data type.
-
-    #     Args:
-    #         column (str): The name of the column to convert.
-    #     """
-    #     try:
-    #         self.df[column] = self.df[column].astype("category")
-    #         print(f"Column '{column}' successfully converted to categorical.")
-    #     except Exception as e:
-    #         print(f"Error converting column '{column}' to categorical: {e}")
-
     def summary(self) -> None:
         """
         Prints a summary of the DataFrame including data types and missing values.
@@ -107,19 +94,3 @@ class DataTransform:
         print(self.df.info())
         print("\nMissing Values:")
         print(self.df.isnull().sum())
-
-if __name__ == "__main__":
-    
-    customer_activity_df = pd.read_csv('customer_activity_data.csv')
-    df = pd.DataFrame(customer_activity_df)
-
-    transformer = DataTransform(df)
-
-    transformer.convert_to_datetime("date_column")
-    transformer.convert_to_numeric("numeric_column")
-    transformer.strip_symbols("text_column", symbols=["$"])
-    transformer.to_category('traffic_type', 'operating_systems', 'browser', 'region', 'visitor_type')
-    transformer.to_Int('administrative','product_related')
-
-    transformer.summary()
-    df.info()

@@ -109,18 +109,3 @@ def load_db_credentials(file_path: str) -> dict:
     except Exception as e:
         print(f"Error loading credentials from {file_path}: {e}")
         return {}
-    
-if __name__ == "__main__":
-    credentials_path = "credentials.yaml"
-    credentials = load_db_credentials(credentials_path)
-
-    connector = RDSDatabaseConnector(credentials)
-    connector.init_db_engine()
-
-    table_name = "customer_activity"
-    df = connector.extract_table_to_dataframe(table_name)
-
-    csv_file_path = "customer_activity_data.csv"
-    connector.save_dataframe_to_csv(df, csv_file_path)
-
-    loaded_df = RDSDatabaseConnector.load_csv_to_dataframe(csv_file_path)

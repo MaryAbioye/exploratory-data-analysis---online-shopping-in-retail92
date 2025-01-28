@@ -57,30 +57,3 @@ class DataFrameInfo:
         print(f"DataFrame Shape: {self.df.shape}")
 
 
-# if __name__ == "__main__":
-
-customer_activity_df = pd.read_csv('customer_activity_data.csv')
-df = pd.DataFrame(customer_activity_df)
-    
-print("Initial DataFrame:")
-print(df)
-
-    # Data Transformation
-transformer = DataTransform(df)
-transformer.convert_to_datetime("date_column")
-transformer.convert_to_numeric("numeric_column")
-transformer.strip_symbols("text_column", symbols=["$"])
-transformer.to_category('traffic_type', 'operating_systems', 'browser', 'region', 'visitor_type')
-transformer.to_Int('administrative','product_related')
-    
-
-print("\nTransformed DataFrame:")
-print(df)
-
-# Data Analysis
-info = DataFrameInfo(df)
-info.describe_columns()
-info.get_statistics()
-info.count_distinct()
-info.count_nulls()
-info.display_shape()

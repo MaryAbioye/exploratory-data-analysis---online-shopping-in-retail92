@@ -45,37 +45,7 @@ class Plotter:
         plt.title(title)
         plt.show()
 
-    # def plot_box(self, column: str) -> None:
-    #     """
-    #     Generates a box plot for the specified column to visualize outliers.
 
-    #     Args:
-    #         column (str): The column to visualize with a box plot.
-    #     """
-    #     if column not in self.df.columns:
-    #         print(f"Column '{column}' not found in the DataFrame.")
-    #         return
-
-    #     plt.figure(figsize=(8, 6))
-    #     sns.boxplot(data=self.df, x=column)
-    #     plt.title(f"Box Plot for {column}")
-    #     plt.show()
-
-    # def plot_hist(self, column: str) -> None:
-    #     """
-    #     Generates a histogram for the specified column to visualize distribution.
-
-    #     Args:
-    #         column (str): The column to visualize with a histogram.
-    #     """
-    #     if column not in self.df.columns:
-    #         print(f"Column '{column}' not found in the DataFrame.")
-    #         return
-
-    #     plt.figure(figsize=(8, 6))
-    #     sns.histplot(data=self.df, x=column, kde=True, bins=20)
-    #     plt.title(f"Histogram for {column}")
-    #     plt.show()
 
     def plot_hist(self, column):
         """
@@ -172,7 +142,7 @@ class Plotter:
             sns.histplot(self.df[column].dropna(), kde=True)
             plt.title(f"Distribution of {column}")
             plt.show()
-
+        
 
 class DataFrameTransform:
     """
@@ -248,6 +218,38 @@ class DataFrameTransform:
                     raise ValueError("Invalid strategy. Use 'mean' or 'median'.")
                 self.df[column].fillna(imputation_value, inplace=True)
                 print(f"Imputed NULL values in column '{column}' using {strategy}.")
+
+    def impute_null(self, column_name, strategy="mean", fill_value=None):
+        """
+        Imputes null values in the specified column based on the chosen strategy.
+
+        Parameters:
+        - column_name (str): The column to impute.
+        - strategy (str): The imputation strategy. Options are "mean", "median", "mode", or "constant".
+        - fill_value: The value to use when strategy="constant". Default is None.
+        """
+        if column_name not in self.df.columns:
+            raise ValueError(f"Column '{column_name}' does not exist in the DataFrame.")
+
+        if strategy == "mean":
+            value = self.df[column_name].mean()
+        elif strategy == "median":
+            value = self.df[column_name].median()
+        elif strategy == "mode":
+            # Compute the mode; if multiple modes exist, use the first one
+            value = self.df[column_name].mode()
+            if value.empty:
+                raise ValueError(f"Column '{column_name}' has no mode to impute.")
+            value = value.iloc[0]
+        elif strategy == "constant":
+            if fill_value is None:
+                raise ValueError("For strategy='constant', a fill_value must be provided.")
+            value = fill_value
+        else:
+            raise ValueError(f"Invalid strategy '{strategy}'. Choose from 'mean', 'median', 'mode', or 'constant'.")
+
+        # Impute the null values
+        self.df[column_name].fillna(value, inplace=True)
 
     def drop_rows_with_nulls(self) -> None:
         """
@@ -496,65 +498,18 @@ class DataFrameTransform:
 
         print(f"Removed columns due to high correlation (threshold > {threshold}): {to_drop}")
         return to_drop
+    
+    def drop_rows_with_nulls_in_column(self, column_name: str) -> None:
+        """
+        Drops rows with NULL values in the specified column.
 
-if __name__ == "__main__":
-    # Sample DataFrame
-    data = {
-        "numeric_column": [10, 20, None, 40, 50],
-        "category_column": ["A", None, "A", "C", "B"],
-        "datetime_column": [pd.NaT, pd.Timestamp("2023-01-02"), None, pd.Timestamp("2023-01-04"), pd.NaT],
-    }
-    original_df = pd.DataFrame(data)
-
-    print("Initial DataFrame:")
-    print(original_df)
-    print()
-
-    # Copy the original DataFrame
-    updated_df = original_df.copy()
-
-    # Initialize DataFrameTransform and Plotter
-    transformer = DataFrameTransform(updated_df)
-    plotter = Plotter(original_df, updated_df)
-
-    # Handle NULL values
-    transformer.drop_columns_with_nulls(threshold=50)  # Drop columns with >50% NULLs
-    transformer.impute_nulls(strategy="median")  # Impute numeric NULLs with median
-    transformer.drop_rows_with_nulls()  # Drop remaining rows with NULLs
-
-    # Visualize the removal of NULL values
-    plotter.plot_null_comparison()
-
-    # Final DataFrame
-    print("Final DataFrame:")
-    print(transformer.df)
-    # customer_activity_df = pd.read_csv('customer_activity_data.csv')
-    # df = pd.DataFrame(customer_activity_df)
-
-    # print("Initial DataFrame:")
-    # print(df)
-    # print()
-
-    # # Step 1: Check NULLs and visualize
-    # transformer = DataFrameTransform(df)
-    # plotter = Plotter(df)
-
-    # plotter.plot_nulls(before=True)
-    # transformer.check_nulls()
-
-    # # Step 2: Drop columns with high NULL percentage 
-    # transformer.drop_columns_with_nulls(threshold=50)
-
-    # # Step 3: Impute NULLs in numeric columns
-    # transformer.impute_nulls(strategy="median")
-
-    # # Step 4: Drop remaining rows with NULLs
-    # transformer.drop_rows_with_nulls()
-
-    # # Check NULLs and visualize again
-    # transformer.check_nulls()
-    # plotter.plot_nulls(before=False)
-
-    # # Final DataFrame
-    # print("Final DataFrame:")
-    # print(transformer.df)
+        Args:
+            column_name (str): The name of the column to check for NULL values.
+        """
+        if column_name in self.df.columns:
+            initial_shape = self.df.shape
+            self.df = self.df[self.df[column_name].notnull()]
+            final_shape = self.df.shape
+            print(f"Dropped rows with NULL values in column '{column_name}'. Rows before: {initial_shape[0]}, Rows after: {final_shape[0]}.")
+        else:
+            print(f"Column '{column_name}' not found in the DataFrame.")

@@ -18,12 +18,7 @@ class DataCorrelationHandler:
         self.df = df
         self.correlation_matrix = None
 
-    # def compute_correlation_matrix(self) -> None:
-    #     """
-    #     Computes the correlation matrix for numeric columns in the DataFrame.
-    #     """
-    #     self.correlation_matrix = self.df.corr()
-    #     print("Correlation matrix computed.")
+   
     def compute_correlation_matrix(self):
         """
         Compute and visualize the correlation matrix.
@@ -73,20 +68,7 @@ class DataCorrelationHandler:
         print(f"Columns identified as highly correlated (threshold={threshold}): {correlated_features}")
         return list(correlated_features)
 
-    # def remove_highly_correlated_columns(self, columns_to_drop: list) -> None:
-    #     """
-    #     Removes highly correlated columns from the DataFrame.
-
-    #     Args:
-    #         columns_to_drop (list): The list of columns to drop.
-    #     """
-    #     initial_shape = self.df.shape
-    #     self.df.drop(columns=columns_to_drop, inplace=True)
-    #     final_shape = self.df.shape
-
-    #     print(f"Removed {len(columns_to_drop)} highly correlated columns.")
-    #     print(f"DataFrame shape before: {initial_shape}, after: {final_shape}.")
-
+    
     def remove_highly_correlated(self, threshold=0.9):
         """
         Identify and remove highly correlated columns.
@@ -110,23 +92,3 @@ class DataCorrelationHandler:
         return to_drop
 
 
-if __name__ == "__main__":
-    customer_activity_df = pd.read_csv('customer_activity_data.csv')
-    df = pd.DataFrame(customer_activity_df)
-
-
-    # Initialize the correlation handler
-    corr_handler = DataCorrelationHandler(df)
-
-    # Step 1: Compute and visualize correlation matrix
-    corr_handler.compute_correlation_matrix()
-    corr_handler.plot_correlation_matrix()
-
-    # Step 2: Identify highly correlated columns
-    columns_to_drop = corr_handler.identify_highly_correlated_columns(threshold=0.8)
-
-    # Step 3 & 4: Remove highly correlated columns
-    corr_handler.remove_highly_correlated_columns(columns_to_drop)
-
-    print("DataFrame after removing highly correlated columns:")
-    print(corr_handler.df)
