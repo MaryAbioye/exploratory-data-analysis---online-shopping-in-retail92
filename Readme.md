@@ -22,6 +22,56 @@ This project demonstrates how to connect to an AWS RDS database, extract data us
 - Saving and loading data efficiently with Pandas.
 - Analysing and transforming data
 
+###Usage
+Python files:
+db_utils.py:
+Uses Sqlalchemy to connect to remote database and creates .csv file of downloaded data.
+
+DataFrameinfo.py:
+Class used to generate basic info about a dataframe, including data types, descriptive statistics, df shape and null values.
+
+transformations.py:
+Contains two classes, one to perform transformations on the data and the second to perform transformations on the dataframe.
+Data transformations include changing the data type.
+Dataframe transformations include removal of null-values (drop columns/rows), imputing data with mean/median/mode, and performing transformations to correct skewed data.
+
+plotter.py:
+Contains a class used to generate plots to visualize a dataset for statistical analysis.
+Visualisations include, visualisation of null-values, bar chart, histogram, heatmaps, boxplots, etc.
+Also contains statistical tests including the chi squared test, and k squared test.
+Additionally, there are methods to generate visuals to assess normalisation of data to correct for skew.
+
+
+Jupyter Notebooks:
+EDA_Online_Shopping_Retail.ipynb:
+Contains the workflow of the initial EDA process including data extraction, loading and cleaning/transformations.
+Key steps included:
+Correcting data types.
+Handling missing values.
+Obtaining basic info on df.
+Checking and correcting distribution.
+Handling outliers.
+Checking for overly correlated data.
+
+Analysis_Answering Business Questions.ipynb:
+Contains the workflow for a more detailed analysis and visualisation of the data.
+Key questions addressed:
+Where are our customers spending their time?
+What software are our customers using?
+What factors are influencing revenue?
+
+
+###File structure
+AiCoreEDA_Project
+├── db_utils.py
+├── DataFrameinfo.py
+├── DataFrameTransform.py
+├── plotter.py
+├── EDA_Online_Shopping_Retail.ipynb
+├── Analysis_Answering Business Questions.ipynb
+└── README.md
+
+
 ## Installation
 1. Clone this repository:
    ```bash
