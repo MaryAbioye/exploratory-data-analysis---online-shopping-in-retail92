@@ -30,7 +30,7 @@ Uses Sqlalchemy to connect to remote database and creates .csv file of downloade
 DataFrameinfo.py:
 Class used to generate basic info about a dataframe, including data types, descriptive statistics, df shape and null values.
 
-transformations.py:
+plotter.py:
 Contains two classes, one to perform transformations on the data and the second to perform transformations on the dataframe.
 Data transformations include changing the data type.
 Dataframe transformations include removal of null-values (drop columns/rows), imputing data with mean/median/mode, and performing transformations to correct skewed data.
